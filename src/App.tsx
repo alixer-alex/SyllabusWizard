@@ -1,38 +1,42 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import { uploadData } from 'aws-amplify/storage';
 
 const client = generateClient<Schema>();
 
+
 function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
 
-  useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }, []);
+    const file = formData.get("file") as File | null;
+    const text = formData.get("text") as string;
 
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
+    if (file) {
+      // Example: create an object URL just for preview or upload
+      const fileURL = URL.createObjectURL(file);
+      console.log("Uploaded file URL:", fileURL);
+      // You can then send the file to your backend
+    } 
+    else if (text.trim()) {
+      console.log("Text provided:", text);
+      // You can send the text to your backend
+    } 
+    else {
+      alert("Please upload a file or paste the syllabus.");
+    }
   }
-
   return (
     <main>
-      <h1>My todos</h1>
-      <button onClick={createTodo}>+ new</button>
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
-        ))}
-      </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-          Review next step of this tutorial.
-        </a>
-      </div>
+      <form onSubmit={handleSubmit}>
+        <label>Upload Syllabus: </label> <br/>
+        <input type = "file" name = "file"/><br/>
+        <label> Or Paste In Syllubus</label><br/>
+        <textarea name="text"> </textarea><br/>
+        <input type = "submit" value = "Submit"/>
+      </form>
     </main>
   );
 }
