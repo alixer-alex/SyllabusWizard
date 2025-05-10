@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
-import { uploadData } from 'aws-amplify/storage';
+//import { useEffect, useState } from "react";
+//import type { Schema } from "../amplify/data/resource";
+//import { generateClient } from "aws-amplify/data";
+//import { uploadData } from 'aws-amplify/storage';
 
-const client = generateClient<Schema>();
+//const client = generateClient<Schema>();
 
 
 function App() {
