@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-syllabuswizard-dev-6454d-authRole",
+      "UnauthRoleArn": "arn:aws:iam::533267098770:role/amplify-syllabuswizard-dev-6454d-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::533267098770:role/amplify-syllabuswizard-dev-6454d-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-syllabuswizard-dev-6454d-deployment",
+      "UnauthRoleName": "amplify-syllabuswizard-dev-6454d-unauthRole",
+      "StackName": "amplify-syllabuswizard-dev-6454d",
+      "StackId": "arn:aws:cloudformation:us-west-2:533267098770:stack/amplify-syllabuswizard-dev-6454d/b3ba8fe0-2e8d-11f0-9dcb-068c781f1cdb",
+      "AmplifyAppId": "d3sy9wxm4zaite"
+    },
+    "categories": {
+      "auth": {
+        "syllabuswizarde956f53b": {}
+      },
+      "policy": {
+        "s3auth": {}
+      }
+    }
+  }
+}
