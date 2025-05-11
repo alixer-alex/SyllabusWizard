@@ -1,27 +1,43 @@
-import { useState } from "react";
-import { generateRandomString } from "ts-randomstring";
-//import type { Schema } from "../amplify/data/resource";
-//import { generateClient } from "aws-amplify/data";
-//import { uploadData } from 'aws-amplify/storage';
+import { useState, useEffect } from "react";
+import { uploadFileToS3File } from "./clienttos3.ts";
+import { socket } from "./websocket.ts";
 
-//const client = generateClient<Schema>();
-import { uploadFileToS3File } from "./clienttos3.ts"
+function generateRandomString(length: number) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+
 
 function App() {
   var [response,showResponse] = useState(false)
   var [aiAnswer, setAiAnswer] = useState("")
+  useEffect(() => {
+    // Ensure socket is connected when app loads
+    if (socket.readyState === WebSocket.OPEN) {
+      console.log("WebSocket already open");
+    } else {
+      socket.onopen = () => {
+        console.log("WebSocket connection established");
+      };
+    }
+    }, []);
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
     const file = formData.get("file") as File | null;
     const text = formData.get("text") as string;
-    const randomString = generateRandomString({length: 10});
+    const randomString = generateRandomString(10);
     console.log(randomString);
 
     console.log(file instanceof Blob);  // Should log true
     console.log(file instanceof File);  // Should log true for file input
-
     if (file) {
       // Example: create an object URL just for preview or upload
       //const fileURL = URL.createObjectURL(file);
@@ -29,8 +45,21 @@ function App() {
       // You can then send the file to your backend
       uploadFileToS3File("syallbuswizard",randomString,file)
       showResponse(true)
-      setAiAnswer("HELLO")
-    } 
+      if (socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          action: "upload-syllabus",
+          bucket: "syllabuswizard",
+          key: randomString,
+        })
+      );
+      socket.onmessage = (event) => {
+        setAiAnswer(event.data)   
+      }
+      } else {
+          console.warn("WebSocket is not open");
+      }
+    }
     else if (text.trim()) {
       console.log("Text provided:", text);
       // You can send the text to your backend

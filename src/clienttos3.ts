@@ -6,9 +6,8 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 Amplify.configure(awsmobile)
 
 export const uploadFileToS3File = async (bucketName: string, key: string, fileContent: Blob) => {
-
   
-  const s3Client = new S3Client({region: 'us-west-1',requestChecksumCalculation:"WHEN_REQUIRED"});
+  const s3Client = new S3Client({region: 'us-west-2',credentials: creds, requestChecksumCalculation:"WHEN_REQUIRED"});
 
 
   // Set upload parameters
