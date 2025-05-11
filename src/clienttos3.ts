@@ -1,8 +1,8 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { fromIni } from "@aws-sdk/credential-providers";
+
 export const uploadFileToS3File = async (bucketName: string, key: string, fileContent: string) => {
   // Create S3 client
-  const s3Client = new S3Client({ region: "us-west-2" ,  credentials: fromIni({ profile: "default" })});
+  const s3Client = new S3Client({ region: "us-west-2" });
 
   // Set upload parameters
   const params = {
