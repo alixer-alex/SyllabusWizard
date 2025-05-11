@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { generateRandomString } from "ts-randomstring";
 //import type { Schema } from "../amplify/data/resource";
 //import { generateClient } from "aws-amplify/data";
 //import { uploadData } from 'aws-amplify/storage';
@@ -15,6 +16,8 @@ function App() {
 
     const file = formData.get("file") as File | null;
     const text = formData.get("text") as string;
+    const randomString = generateRandomString({length: 10});
+    console.log(randomString);
 
     console.log(file instanceof Blob);  // Should log true
     console.log(file instanceof File);  // Should log true for file input
@@ -24,7 +27,7 @@ function App() {
       //const fileURL = URL.createObjectURL(file);
       //console.log("Uploaded file URL:", fileURL);
       // You can then send the file to your backend
-      uploadFileToS3File("syallbuswizard","syllubus",file)
+      uploadFileToS3File("syallbuswizard",randomString,file)
       showResponse(true)
       setAiAnswer("HELLO")
     } 
