@@ -4,7 +4,7 @@
 //import { uploadData } from 'aws-amplify/storage';
 
 //const client = generateClient<Schema>();
-
+import { uploadFileToS3File } from "./clienttos3.ts"
 
 function App() {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -19,10 +19,12 @@ function App() {
       const fileURL = URL.createObjectURL(file);
       console.log("Uploaded file URL:", fileURL);
       // You can then send the file to your backend
+      uploadFileToS3File("syallbuswizard","syllubus",fileURL)
     } 
     else if (text.trim()) {
       console.log("Text provided:", text);
       // You can send the text to your backend
+      
     } 
     else {
       alert("Please upload a file or paste the syllabus.");
