@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { uploadFileToS3File } from "./clienttos3.ts";
 import { socket } from "./websocket.ts";
+import "./App.css"
 
 function generateRandomString(length: number) {
   let result = '';
@@ -12,11 +13,10 @@ function generateRandomString(length: number) {
   return result;
 }
 
-
-
+    
 function App() {
-  var [response,showResponse] = useState(false)
-  var [aiAnswer, setAiAnswer] = useState("")
+  let [response,showResponse] = useState(false)
+  let [aiAnswer, setAiAnswer] = useState("")
   useEffect(() => {
     // Ensure socket is connected when app loads
     if (socket.readyState === WebSocket.OPEN) {
@@ -26,7 +26,20 @@ function App() {
         console.log("WebSocket connection established");
       };
     }
+
     }, []);
+    
+    socket.onmessage = (event) => {
+          console.log(event.data)
+          const message = JSON.parse(event.data);
+          if(message["message"][0]["text"]){
+            setAiAnswer(message["message"][0]["text"])
+          
+          }
+          else{
+            setAiAnswer(message["message"])
+          }
+    }
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -34,11 +47,8 @@ function App() {
     const file = formData.get("file") as File | null;
     const text = formData.get("text") as string;
     const randomString = generateRandomString(10);
-    console.log(randomString);
 
-    console.log(file instanceof Blob);  // Should log true
-    console.log(file instanceof File);  // Should log true for file input
-    if (file) {
+    if (file != null && text.trim() === "") {
       // Example: create an object URL just for preview or upload
       //const fileURL = URL.createObjectURL(file);
       //console.log("Uploaded file URL:", fileURL);
@@ -49,33 +59,36 @@ function App() {
       socket.send(
         JSON.stringify({
           action: "upload-syllabus",
-          bucket: "syllabuswizard",
-          key: randomString,
+          bucket: "syallbuswizard",
+          key: randomString
         })
       );
-      socket.onmessage = (event) => {
-        setAiAnswer(event.data)   
-      }
-      } else {
-          console.warn("WebSocket is not open");
-      }
     }
+  }
     else if (text.trim()) {
       console.log("Text provided:", text);
       // You can send the text to your backend
       showResponse(true)
-      setAiAnswer("HELLO")
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(
+          JSON.stringify({
+            action: "upload-text",
+            text:text
+          })
+        );
     } 
     else {
       alert("Please upload a file or paste the syllabus.");
     }
+    
   }
+  setAiAnswer("💡Thinking...💡")
+}
   if (response){
     return (
       <>
-        <p>
-          {aiAnswer}
-        </p>
+  
+          <pre>{aiAnswer}</pre>
       </>
 
     )
@@ -84,7 +97,7 @@ function App() {
     return (
     <main>
       <form onSubmit={handleSubmit}>
-        <label>Upload Syllabus: </label> <br/>
+        <label>📝Upload Syllabus📝: </label> <br/>
         <input type = "file" name = "file"/><br/>
         <label> Or Paste In Syllubus</label><br/>
         <textarea name="text"> </textarea><br/>
